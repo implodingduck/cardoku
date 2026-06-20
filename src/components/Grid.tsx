@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import Cell from './Cell';
-import { randomGridColors, solve } from '../utils/solver';
+import { generateGridFromCars, randomGridColors, solve } from '../utils/solver';
 import '../App.css';
 import type { Placement } from '../types';
 import Confetti from './Confetti';
@@ -36,8 +36,18 @@ const colorImage: Record<string, string> = {
   yellow: yellowImg,
 };
 
+function generateSolvableGrid(size: number, colors: string[], maxAttempts = 200) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const g = generateGridFromCars(size, colors);
+    const p = solve(g, colors);
+    if (p) return g;
+  }
+  // fallback: return last generated grid from randomGridColors
+  return randomGridColors(size, colors);
+}
+
 export default function Grid({ size = 6, colors = defaultColors }: Props) {
-  const [gridColors, setGridColors] = useState<string[][]>(() => randomGridColors(size, colors));
+  const [gridColors, setGridColors] = useState<string[][]>(() => generateSolvableGrid(size, colors));
   const [placements, setPlacements] = useState<Placement[] | null>(null);
   const [revealed, setRevealed] = useState<boolean[][]>(() =>
     Array.from({ length: size }, () => Array.from({ length: size }, () => false))
@@ -54,7 +64,29 @@ export default function Grid({ size = 6, colors = defaultColors }: Props) {
   }, [foundColors, colors.length]);
 
   useEffect(() => {
-    const result = solve(gridColors, colors);
+    // ensure solver returns placements; if not, regenerate a solvable grid
+    let result = solve(gridColors, colors);
+    if (!result) {
+      const maxTry = 200;
+      for (let i = 0; i < maxTry; i++) {
+        const g = randomGridColors(size, colors);
+        const p = solve(g, colors);
+        if (p) {
+          setGridColors(g);
+          return; // effect will re-run for the new grid
+        }
+      }
+      // if still not found, set placements to null and continue
+      console.warn('Could not find placements after attempts');
+      setPlacements(null);
+      // reset state anyway
+      setRevealed(Array.from({ length: size }, () => Array.from({ length: size }, () => false)));
+      setFoundColors(new Set());
+      setShowSolution(false);
+      setGuesses(0);
+      return;
+    }
+
     setPlacements(result);
     // reset reveal/found when puzzle changes
     setRevealed(Array.from({ length: size }, () => Array.from({ length: size }, () => false)));
@@ -118,7 +150,7 @@ export default function Grid({ size = 6, colors = defaultColors }: Props) {
 
   const newPuzzle = () => {
     setShowCongrats(false);
-    setGridColors(randomGridColors(size, colors));
+    setGridColors(generateSolvableGrid(size, colors));
   };
   const showAll = () => setShowSolution((s) => !s);
   const resetReveals = () => {
