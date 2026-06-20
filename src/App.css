@@ -192,13 +192,13 @@
 }
 
 /* Plain CSS additions for Cardoku grid & cells (kept minimal) */
-.game { display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; } 
+.game { display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; padding: 0 1rem; } 
 .App { display:flex; flex-direction: column; align-items: center; padding: 24px; } 
 header { text-align: center; }
 header p { font-size: 14px; }
 .controls { display:flex; gap:8px; align-items:center; padding-top: 1em; }
 .controls button { font-size: 1em; padding: 1em; }
-.grid { /* grid layout applied inline; this ensures fallback styling */ display: grid; gap: 6px; }
+.grid { /* grid layout applied inline; this ensures fallback styling */ display: grid; gap: 0.375em; }
 .cell { display: inline-flex; align-items: center; justify-content: center; border-radius:6px; border:1px solid rgba(0,0,0,0.08); padding:0; cursor: pointer; }
 .cell:focus { outline: 2px solid #333; }
 .car { font-size: 1.2rem; }

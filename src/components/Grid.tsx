@@ -127,7 +127,8 @@ export default function Grid({ size = 6, colors = defaultColors }: Props) {
     setShowSolution(false);
   };
 
-  const cellSize = Math.max(40, Math.floor(480 / size));
+  const cellSizePx = Math.max(40, Math.floor(480 / size));
+  const cellSizeEm = (cellSizePx / 16).toFixed(4);
 
   return (
     <div className="game">
@@ -142,9 +143,13 @@ export default function Grid({ size = 6, colors = defaultColors }: Props) {
         className="grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${size}, ${cellSize}px)`,
-          gridAutoRows: `${cellSize}px`,
-          gap: '6px',
+          gridTemplateColumns: `repeat(${size}, var(--cell-size))`,
+          gridAutoRows: `var(--cell-size)`,
+          gap: '0.375em',
+          ['--cell-size' as any]: `min(${cellSizeEm}em, calc((100vw - 2rem) / ${size}))`,
+          justifyContent: 'center',
+          boxSizing: 'border-box',
+          width: '100%'
         }}
       >
         {gridColors.map((row, r) =>
