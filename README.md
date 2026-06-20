@@ -1,73 +1,30 @@
-# React + TypeScript + Vite
+# Cardoku
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Play Cardoku — a small logic puzzle built with React + TypeScript + Vite.
 
-Currently, two official plugins are available:
+Live demo: https://implodingduck.github.io/cardoku
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Game rules
+- Board: 6×6 grid of colored regions.
+- There is exactly one hidden car for each color.
+- Cars cannot share a row, a column, nor be adjacent (8-neighbors).
+- Click cells to reveal them. Finding a car for a color reveals all cells of that color, the car's entire row & column, and adjacent squares.
+- A guess counter increments on each reveal. Finish when all cars are found.
 
-## React Compiler
+How to run locally
+1. npm install
+2. npm run dev
+3. Open http://localhost:5173
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Build & deploy
+- Build: npm run build (outputs `dist/`)
+- GitHub Pages: a GitHub Actions workflow is included (.github/workflows/pages.yml) to build and publish `dist/` on push to main.
 
-## Expanding the ESLint configuration
+Assets
+- Place car images in src/assets (blue.png, green.png, orange.png, purple.png, red.png, yellow.png). The app uses these when revealing cars.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Contributing
+- PRs welcome. Run the dev server and make changes in src/.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+License
+- MIT
