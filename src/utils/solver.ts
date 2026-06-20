@@ -137,5 +137,45 @@ export function solve(gridColors: string[][], colors: string[]) {
   }
 
   if (backtrack(0)) return placements as any;
+
+  // Fallback: attempt randomized greedy assignment multiple times
+  const maxFallback = 200;
+  for (let attempt = 0; attempt < maxFallback; attempt++) {
+    const occ = Array.from({ length: size }, () => Array(size).fill(false));
+    const pms: ({ colorIndex: number; row: number; col: number } | null)[] = Array(colors.length).fill(null);
+    let ok = true;
+    for (let ci = 0; ci < colors.length; ci++) {
+      const positions = colorPositions[ci].slice();
+      // shuffle positions
+      for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]];
+      }
+      let placed = false;
+      for (const { r, c } of positions) {
+        // check validity against occ
+        if (occ[r][c]) continue;
+        let bad = false;
+        for (let k = 0; k < size; k++) if (occ[r][k] || occ[k][c]) { bad = true; break; }
+        if (bad) continue;
+        for (let dr = -1; dr <= 1 && !bad; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            if (dr === 0 && dc === 0) continue;
+            const nr = r + dr;
+            const nc = c + dc;
+            if (nr >= 0 && nr < size && nc >= 0 && nc < size && occ[nr][nc]) { bad = true; break; }
+          }
+        }
+        if (bad) continue;
+        occ[r][c] = true;
+        pms[ci] = { colorIndex: ci, row: r, col: c };
+        placed = true;
+        break;
+      }
+      if (!placed) { ok = false; break; }
+    }
+    if (ok) return pms as any;
+  }
+
   return null;
 }
